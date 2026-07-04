@@ -1,14 +1,11 @@
-import { API_URL } from "./utils";
+import { API_URL, apiUnreachableMessage } from "./utils";
 import type { ResumeAnalysis } from "@/types/resume";
-
-const BACKEND_UNREACHABLE =
-  "Cannot reach the API server. Start the backend with: npm run dev:backend (or cd backend && uvicorn app.main:app --reload --port 8000).";
 
 async function apiFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   try {
     return await fetch(input, init);
   } catch {
-    throw new Error(BACKEND_UNREACHABLE);
+    throw new Error(apiUnreachableMessage());
   }
 }
 

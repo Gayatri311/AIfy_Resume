@@ -16,7 +16,11 @@ NOT valid resumes (reject these):
 - Job descriptions, blog posts, articles, essays, research papers
 - Random notes, screenshots, or blank/nearly empty documents
 
-Be strict: when in doubt about career content, mark is_resume as false.
+Be practical: PDF text extraction is often messy (missing headers, scrambled order, broken columns).
+If the document contains a person's contact info OR job titles OR employers OR education/skills language,
+mark is_resume as true even when formatting is poor.
+
+Only reject clear non-resumes (invoices, articles, blank docs, cover letters with zero work history).
 
 Respond with JSON only — no markdown, no commentary."""
 

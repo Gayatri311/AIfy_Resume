@@ -553,8 +553,28 @@ def parse_resume_text(text: str, *, allow_empty: bool = False) -> ResumeData:
             )
 
     if not experience and not summary:
-        from app.services.exceptions import ResumeValidationError
-        raise ResumeValidationError()
+        body_lines = [
+            l
+            for l in lines[start_idx:]
+            if l.strip()
+            and len(l.strip()) > 3
+            and not _match_section(l)
+            and not EMAIL.search(l)
+            and l != personal.name
+        ]
+        if body_lines:
+            joined = " ".join(body_lines)[:1200].strip()
+            if joined:
+                summary = joined
+                experience.append(
+                    ExperienceItem(
+                        company="Experience",
+                        title=personal.title or "Role",
+                        start_date="",
+                        end_date="",
+                        bullets=body_lines[:15],
+                    )
+                )
 
     return normalize_resume_data(
         ResumeData(
