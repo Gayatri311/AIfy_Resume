@@ -40,7 +40,26 @@ Optional: also reference the same URL as `DATABASE_URL_SYNC` (sync driver), or l
 
 Do **not** copy `localhost` values from your local `backend/.env`.
 
-### Environment variables
+### If you still get `Connection refused`
+
+Railway logs will show `Database target: HOST:PORT (ssl/no-ssl)` — use that to debug.
+
+| Log shows | Fix |
+|-----------|-----|
+| `localhost:5432` | `DATABASE_URL` is missing on the **backend** service — add a reference (see above) |
+| `postgres.railway.internal:5432 (no-ssl)` | Postgres not reachable on private network. Confirm Postgres service is **Active**, then **Redeploy backend**. If it still fails, switch to the **public** URL (below). |
+| `something.proxy.rlwy.net:##### (ssl)` or `*.railway.app:##### (ssl)` | Public proxy URL — port must be the **proxy port** Railway gives you (often **not** 5432). Copy the full URL from Postgres → **Connect** → **Public Network**. |
+| Public URL but port is `5432` | Wrong — you mixed internal port with public host. Re-copy the full public URL from Railway. |
+
+**Recommended fix when internal fails:**
+
+1. Postgres service → **Connect** tab → **Public Network** → enable if off
+2. Copy the full `postgresql://...` URL (note the port, e.g. `:18432`)
+3. Backend service → **Variables** → set `DATABASE_URL` to that full URL
+4. Redeploy backend
+
+Your internal URL (`postgres.railway.internal:5432`) is **correct in format** — refusal usually means Postgres isn’t running yet, or private networking isn’t working between your two services. The public URL is the reliable fallback for private beta.
+
 
 Copy from `backend/.env.production.example`. Minimum set:
 

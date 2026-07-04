@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings
 
 
 def _to_asyncpg_url(url: str) -> str:
+    url = url.strip()
     if url.startswith("postgres://"):
         return url.replace("postgres://", "postgresql+asyncpg://", 1)
     if url.startswith("postgresql://") and "+asyncpg" not in url:
@@ -15,6 +16,7 @@ def _to_asyncpg_url(url: str) -> str:
 
 
 def _to_sync_pg_url(url: str) -> str:
+    url = url.strip()
     if url.startswith("postgres://"):
         return url.replace("postgres://", "postgresql://", 1)
     if url.startswith("postgresql+asyncpg://"):

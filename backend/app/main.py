@@ -1,15 +1,20 @@
 from contextlib import asynccontextmanager
+import asyncio
 import logging
+from typing import Optional
 from urllib.parse import urlparse
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import get_settings
-from app.core.database import engine, Base
+from app.core.database import engine, Base, db_target_label
 from app.api.routes import resumes
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
+
+_STARTUP_DB_ATTEMPTS = 15
+_STARTUP_DB_DELAY_SEC = 2
 
 
 @asynccontextmanager
@@ -18,11 +23,38 @@ async def lifespan(app: FastAPI):
     if db_host in ("localhost", "127.0.0.1") and not settings.debug:
         logger.error(
             "DATABASE_URL points to %s — Postgres is not reachable inside Railway. "
-            "Add a Postgres plugin and reference its DATABASE_URL on this service.",
+            "On the BACKEND service: Variables → Add Reference → PostgreSQL → DATABASE_URL.",
             db_host,
         )
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    else:
+        logger.info("Database target: %s", db_target_label(settings.database_url))
+
+    last_error: Optional[Exception] = None
+    for attempt in range(1, _STARTUP_DB_ATTEMPTS + 1):
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            if attempt > 1:
+                logger.info("Database connected on attempt %s", attempt)
+            break
+        except Exception as exc:
+            last_error = exc
+            if attempt >= _STARTUP_DB_ATTEMPTS:
+                logger.error(
+                    "Database unreachable after %s attempts (%s). "
+                    "Check Postgres is Active, DATABASE_URL is on the backend service, "
+                    "and public URLs use the proxy port (not 5432).",
+                    _STARTUP_DB_ATTEMPTS,
+                    db_target_label(settings.database_url),
+                )
+                raise last_error from exc
+            logger.warning(
+                "Database not ready (attempt %s/%s): %s",
+                attempt,
+                _STARTUP_DB_ATTEMPTS,
+                exc,
+            )
+            await asyncio.sleep(_STARTUP_DB_DELAY_SEC)
     yield
 
 
