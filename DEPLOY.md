@@ -26,19 +26,38 @@ Acceptable for trusted testers only — resume URLs are not auth-protected yet.
 
 ### Link Postgres to the API service (required)
 
-`Connection refused` on startup means the API has **no reachable Postgres** — usually `DATABASE_URL` is missing and the app falls back to `localhost`.
+Railway **no longer auto-injects** database URLs. You must add an explicit **reference** on the API service (e.g. `AIfy_Resume`), not only on Postgres (e.g. `Postgres-Cq8L`).
 
-1. Open your **backend** service → **Variables**
-2. Click **+ New Variable** → **Add Reference**
-3. Select the **PostgreSQL** service → choose **`DATABASE_URL`** (or `DATABASE_PRIVATE_URL` for internal networking)
-4. Name it **`DATABASE_URL`** on the backend service
-5. Redeploy
+**Dashboard (30 seconds):**
 
-The app auto-converts Railway’s `postgresql://...` URL to `postgresql+asyncpg://...`. You do **not** need to edit the URL manually.
+1. Open service **`AIfy_Resume`** (GitHub / API — not Postgres)
+2. **Variables** → **+ New Variable** → **Add Reference** (or raw variable)
+3. If raw, set:
+   - **Name:** `DATABASE_URL`
+   - **Value:** `${{Postgres-Cq8L.DATABASE_URL}}`  
+     (use autocomplete — service name must match your Postgres service exactly)
+4. Save → Railway redeploys automatically
 
-Optional: also reference the same URL as `DATABASE_URL_SYNC` (sync driver), or leave it unset — it is derived automatically.
+**CLI (optional):**
 
-Do **not** copy `localhost` values from your local `backend/.env`.
+```bash
+npm install -g @railway/cli
+railway login
+cd backend && railway link   # pick AIfy_Resume
+chmod +x ../scripts/railway-link-postgres.sh
+../scripts/railway-link-postgres.sh Postgres-Cq8L AIfy_Resume
+```
+
+The app auto-converts Railway’s `postgresql://...` URL to `postgresql+asyncpg://...`. Do **not** paste your local `localhost` `.env` value.
+
+Verify after deploy — logs should show:
+
+```
+Database env: DATABASE_URL=set, ...
+Database target: postgres.railway.internal:5432 (no-ssl)
+```
+
+Or `curl https://YOUR-API.up.railway.app/health` → `"db_host": "postgres.railway.internal"`.
 
 ### If you still get `Connection refused`
 

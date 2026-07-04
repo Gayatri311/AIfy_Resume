@@ -54,13 +54,20 @@ def _env_status(name: str) -> str:
     return "set"
 
 
+def _database_env_candidates() -> list[Optional[str]]:
+    """Order matters: prefer private/internal URL, then public proxy, then parts."""
+    return [
+        _env("DATABASE_URL"),
+        _env("DATABASE_PRIVATE_URL"),
+        _env("DATABASE_PUBLIC_URL"),
+        _env("POSTGRES_URL"),
+        _env("POSTGRESQL"),  # common typo on Railway dashboards
+        _postgres_url_from_parts(),
+    ]
+
+
 def resolve_database_url(from_settings: Optional[str] = None) -> str:
-    env_url = (
-        _env("DATABASE_URL")
-        or _env("DATABASE_PRIVATE_URL")
-        or _env("POSTGRES_URL")
-        or _postgres_url_from_parts()
-    )
+    env_url = next((u for u in _database_env_candidates() if u), None)
     if env_url:
         return _to_asyncpg_url(env_url)
     if from_settings and from_settings.strip() and not database_url_is_localhost(from_settings):
@@ -75,12 +82,7 @@ def is_railway_runtime() -> bool:
 
 
 def resolve_database_url_sync(from_settings: Optional[str] = None) -> str:
-    env_url = (
-        _env("DATABASE_URL")
-        or _env("DATABASE_PRIVATE_URL")
-        or _env("POSTGRES_URL")
-        or _postgres_url_from_parts()
-    )
+    env_url = next((u for u in _database_env_candidates() if u), None)
     if env_url:
         return _to_sync_pg_url(env_url)
     if from_settings and from_settings.strip():
@@ -92,7 +94,9 @@ def database_env_status() -> str:
     names = (
         "DATABASE_URL",
         "DATABASE_PRIVATE_URL",
+        "DATABASE_PUBLIC_URL",
         "POSTGRES_URL",
+        "POSTGRESQL",
         "PGHOST",
         "PGPORT",
         "PGUSER",
