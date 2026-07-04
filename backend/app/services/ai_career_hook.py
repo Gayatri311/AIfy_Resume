@@ -29,9 +29,10 @@ def _skill_present(skills: list[str], needle: str) -> bool:
 def _infer_task(bullet: str) -> str:
     cleaned = re.sub(r"^[\-•*]\s*", "", (bullet or "").strip())
     cleaned = re.sub(
-        r"(?i)^(led|managed|developed|built|created|implemented|designed|drove|owned|supported|delivered)\s+",
+        r"^(led|managed|developed|built|created|implemented|designed|drove|owned|supported|delivered)\s+",
         "",
         cleaned,
+        flags=re.I,
     )
     words = cleaned.split()[:6]
     task = " ".join(words).rstrip(".,;")

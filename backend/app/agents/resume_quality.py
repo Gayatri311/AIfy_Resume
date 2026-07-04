@@ -3,8 +3,9 @@
 import re
 
 WEAK_OPENERS = re.compile(
-    r"^(?i)(assisted with|assisted in|helped with|helped|worked on|responsible for|"
-    r"duties included|participated in|involved in|handled|managed)\s+"
+    r"^(assisted with|assisted in|helped with|helped|worked on|responsible for|"
+    r"duties included|participated in|involved in|handled|managed)\s+",
+    re.I,
 )
 
 DUTY_PHRASES = (

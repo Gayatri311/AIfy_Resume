@@ -11,44 +11,45 @@ MAX_CONTEXTUAL_ENHANCEMENTS = 5
 MAX_MODERATE_ENHANCEMENTS = 12
 
 WEAK_OPENERS = re.compile(
-    r"^(?i)(assisted with|assisted in|helped with|helped|worked on|responsible for|"
-    r"duties included|participated in|involved in)\s+"
+    r"^(assisted with|assisted in|helped with|helped|worked on|responsible for|"
+    r"duties included|participated in|involved in)\s+",
+    re.I,
 )
 
 ACTION_VERB_UPGRADES = [
-    (re.compile(r"(?i)^assisted with\s+"), "Supported "),
-    (re.compile(r"(?i)^assisted in\s+"), "Contributed to "),
-    (re.compile(r"(?i)^helped with\s+"), "Partnered on "),
-    (re.compile(r"(?i)^helped\s+"), "Supported "),
-    (re.compile(r"(?i)^worked on\s+"), "Delivered "),
-    (re.compile(r"(?i)^responsible for\s+"), "Owned "),
-    (re.compile(r"(?i)^participated in\s+"), "Contributed to "),
-    (re.compile(r"(?i)^involved in\s+"), "Collaborated on "),
+    (re.compile(r"^assisted with\s+", re.I), "Supported "),
+    (re.compile(r"^assisted in\s+", re.I), "Contributed to "),
+    (re.compile(r"^helped with\s+", re.I), "Partnered on "),
+    (re.compile(r"^helped\s+", re.I), "Supported "),
+    (re.compile(r"^worked on\s+", re.I), "Delivered "),
+    (re.compile(r"^responsible for\s+", re.I), "Owned "),
+    (re.compile(r"^participated in\s+", re.I), "Contributed to "),
+    (re.compile(r"^involved in\s+", re.I), "Collaborated on "),
 ]
 
 CONTEXTUAL_REWRITES: list[tuple[re.Pattern, str]] = [
     (
-        re.compile(r"(?i)(document|documentation|wiki|playbook|runbook|onboard|sop)"),
+        re.compile(r"(document|documentation|wiki|playbook|runbook|onboard|sop)", re.I),
         "{core}, using structured templates so updates stay consistent across the team.",
     ),
     (
-        re.compile(r"(?i)(report|dashboard|metric|kpi|analytic|insight)"),
+        re.compile(r"(report|dashboard|metric|kpi|analytic|insight)", re.I),
         "{core}, standardizing recurring reports to reduce weekly prep time.",
     ),
     (
-        re.compile(r"(?i)(deploy|ci/?cd|pipeline|release|automation|workflow)"),
+        re.compile(r"(deploy|ci/?cd|pipeline|release|automation|workflow)", re.I),
         "{core}, reducing manual steps through repeatable workflow improvements.",
     ),
     (
-        re.compile(r"(?i)(data|database|sql|excel|spreadsheet)"),
+        re.compile(r"(data|database|sql|excel|spreadsheet)", re.I),
         "{core}, applying structured data checks before sharing results with stakeholders.",
     ),
     (
-        re.compile(r"(?i)(stakeholder|cross-functional|team|communicat|coordination)"),
+        re.compile(r"(stakeholder|cross-functional|team|communicat|coordination)", re.I),
         "{core}, keeping stakeholders aligned with clear updates and follow-through.",
     ),
     (
-        re.compile(r"(?i)(customer|client|user|support)"),
+        re.compile(r"(customer|client|user|support)", re.I),
         "{core}, prioritizing responsiveness and clear resolution paths.",
     ),
 ]
