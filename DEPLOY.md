@@ -20,9 +20,25 @@ Acceptable for trusted testers only — resume URLs are not auth-protected yet.
 
 ### Create services
 
-1. New project → **PostgreSQL** plugin (note connection URL)
+1. New project → **Add PostgreSQL** (Database plugin)
 2. New service → **GitHub repo** → root path: `backend/`
 3. Or deploy from Dockerfile: `backend/Dockerfile`
+
+### Link Postgres to the API service (required)
+
+`Connection refused` on startup means the API has **no reachable Postgres** — usually `DATABASE_URL` is missing and the app falls back to `localhost`.
+
+1. Open your **backend** service → **Variables**
+2. Click **+ New Variable** → **Add Reference**
+3. Select the **PostgreSQL** service → choose **`DATABASE_URL`** (or `DATABASE_PRIVATE_URL` for internal networking)
+4. Name it **`DATABASE_URL`** on the backend service
+5. Redeploy
+
+The app auto-converts Railway’s `postgresql://...` URL to `postgresql+asyncpg://...`. You do **not** need to edit the URL manually.
+
+Optional: also reference the same URL as `DATABASE_URL_SYNC` (sync driver), or leave it unset — it is derived automatically.
+
+Do **not** copy `localhost` values from your local `backend/.env`.
 
 ### Environment variables
 
@@ -30,8 +46,7 @@ Copy from `backend/.env.production.example`. Minimum set:
 
 | Variable | Example |
 |----------|---------|
-| `DATABASE_URL` | `postgresql+asyncpg://...` (from Railway Postgres) |
-| `DATABASE_URL_SYNC` | `postgresql://...` (same host, sync driver) |
+| `DATABASE_URL` | Reference from Railway Postgres (auto-normalized) |
 | `GOOGLE_API_KEY` | Your Gemini key |
 | `LLM_PROVIDER` | `gemini` |
 | `LLM_MODEL` | `gemini-2.5-flash` |

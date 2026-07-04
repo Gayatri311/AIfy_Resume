@@ -1,4 +1,7 @@
 from contextlib import asynccontextmanager
+import logging
+from urllib.parse import urlparse
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import get_settings
@@ -6,10 +9,18 @@ from app.core.database import engine, Base
 from app.api.routes import resumes
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    db_host = urlparse(settings.database_url).hostname or "unknown"
+    if db_host in ("localhost", "127.0.0.1") and not settings.debug:
+        logger.error(
+            "DATABASE_URL points to %s — Postgres is not reachable inside Railway. "
+            "Add a Postgres plugin and reference its DATABASE_URL on this service.",
+            db_host,
+        )
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
