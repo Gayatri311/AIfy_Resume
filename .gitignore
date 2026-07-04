@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+*.pyc
+
+# Environment — NEVER commit real secrets (use Railway/Vercel env vars in prod)
+.env
+.env.*
+!.env.example
+!**/.env.example
+!**/.env.*.example
+backend/.env
+backend/.env.local
+backend/.env.production
+frontend/.env.local
+frontend/.env.production
+
+# Build
+frontend/.next/
+frontend/out/
+dist/
+
+# Uploads
+backend/uploads/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# Python
+*.egg-info/
+.eggs/

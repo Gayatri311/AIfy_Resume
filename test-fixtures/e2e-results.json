@@ -1,0 +1,87 @@
+[
+  {
+    "test": "health check",
+    "ok": true,
+    "detail": "{'status': 'ok', 'service': 'alfy-resume-api'}"
+  },
+  {
+    "test": "reject invalid file type",
+    "ok": true,
+    "detail": "{\"detail\":\"Only PDF and DOCX files are supported\"}"
+  },
+  {
+    "test": "upload weak resume",
+    "ok": true,
+    "detail": "f69d3de5-8897-4c36-a3da-bdc2835ffe00"
+  },
+  {
+    "test": "weak resume processing",
+    "ok": true,
+    "detail": "Complete"
+  },
+  {
+    "test": "weak resume has section changes",
+    "ok": true,
+    "detail": "3/5 sections changed"
+  },
+  {
+    "test": "weak resume summary improved",
+    "ok": true,
+    "detail": "Responsible for team meetings with recent experience at ABC Technologies. Brings hands-on experience"
+  },
+  {
+    "test": "weak resume scores present",
+    "ok": true,
+    "detail": "ai=40.0 ats=45.0"
+  },
+  {
+    "test": "interview questions generated",
+    "ok": true,
+    "detail": "15"
+  },
+  {
+    "test": "enhanced_data populated",
+    "ok": false,
+    "detail": "orig_len=0 enh_len=0"
+  },
+  {
+    "test": "BUG: enhanced_data equals original despite diffs",
+    "ok": false,
+    "detail": "preview/dashboard will show wrong data"
+  },
+  {
+    "test": "upload decent resume",
+    "ok": true,
+    "detail": "25284056-072b-40d3-9258-b2e19d5c17f4"
+  },
+  {
+    "test": "decent resume processing",
+    "ok": true,
+    "detail": "Complete"
+  },
+  {
+    "test": "decent resume has some changes",
+    "ok": true,
+    "detail": "3 sections"
+  },
+  {
+    "test": "pdf export",
+    "ok": true,
+    "detail": "1631 bytes"
+  },
+  {
+    "test": "section accept PATCH",
+    "ok": true,
+    "detail": "ok"
+  },
+  {
+    "test": "frontend /",
+    "ok": true,
+    "detail": "status=200"
+  },
+  {
+    "test": "frontend /upload",
+    "ok": true,
+    "detail": "status=200"
+  }
+]
